@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re-Animator - Windows 95</title>
+    <style>
+        body { margin: 0; padding: 0; background: #008080; font-family: "MS Sans Serif", Tahoma, sans-serif; font-size: 11px; cursor: default; }
+        .desktop { position: relative; width: 100vw; height: 100vh; background: #008080; }
+        .window { position: absolute; background: #c0c0c0; border: 2px outset; width: 500px; height: 400px; left: 100px; top: 50px; }
+        .title-bar { background: #000080; color: white; padding: 2px 4px; font-weight: bold; display: flex; justify-content: space-between; }
+        .title-bar-button { width: 16px; height: 14px; background: #c0c0c0; border: 1px outset; text-align: center; line-height: 12px; font-size: 8px; }
+        .window-content { padding: 8px; height: calc(100% - 30px); }
+        .button { background: #c0c0c0; border: 2px outset; padding: 2px 8px; font-size: 11px; margin: 2px; }
+        .button:active { border: 2px inset; }
+        textarea { width: 100%; height: 150px; background: white; border: 2px inset; font-family: "Courier New", monospace; font-size: 12px; }
+        .taskbar { position: fixed; bottom: 0; left: 0; right: 0; background: #c0c0c0; border-top: 2px outset; padding: 2px; }
+        .start-button { background: #c0c0c0; border: 2px outset; padding: 2px 8px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <div class="window">
+            <div class="title-bar">
+                <div>Notepad - RE-ANIMATOR.EXE</div>
+                <div><button class="title-bar-button">×</button></div>
+            </div>
+            <div class="window-content">
+                <h3>🤖 AI Writing Assistant (Windows 95 Edition)</h3>
+                <textarea id="text-input">Welcome to Re-Animator! This brings classic Windows 95 back to life with AI assistance.</textarea>
+                <br>
+                <button class="button" onclick="processText('improve')">🔄 Improve</button>
+                <button class="button" onclick="processText('shorten')">✂️ Shorten</button>
+                <button class="button" onclick="processText('summarize')">📋 Summarize</button>
+                <br><br>
+                <div id="result" style="background: white; border: 1px inset; padding: 8px; min-height: 60px;">
+                    AI results will appear here...
+                </div>
+                <div id="status" style="color: green; margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="taskbar">
+        <button class="start-button">Start</button>
+        <div style="margin-left: 10px;">Windows 95</div>
+    </div>
+
+    <script>
+        async function processText(action) {
+            const text = document.getElementById('text-input').value;
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+
+            status.textContent = '⏳ Processing with AI...';
+
+            try {
+                const response = await fetch('/api/rewrite', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: text, action: action})
+                });
+                const data = await response.json();
+                result.innerHTML = `<strong>Original:</strong> ${data.original}<br><br><strong>Result:</strong> ${data.result}`;
+                status.textContent = '✅ Processing complete!';
+            } catch (error) {
+                status.textContent = '❌ Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
